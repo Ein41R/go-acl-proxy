@@ -21,6 +21,9 @@ var perHopHeaders = []string{
 	"Upgrade",
 }
 
+// EXPLINATION: global variable to hold the config, loaded at startup
+var config Config
+
 func main() {
 	ctx := context.Background()
 	ctx, err := loadConfig(ctx)
