@@ -38,7 +38,7 @@ func fetchACL() io.ReadCloser {
 
 }
 
-// NOTE: runs in goroutine, therefore panic() is justfified
+// NOTE: runs in goroutine, therefore panic() justfified?
 func loadACL() {
 	matcher = adblock.NewMatcher()
 
