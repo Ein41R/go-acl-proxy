@@ -30,7 +30,7 @@ func main() {
 		ReadTimeout:  config.Timeout * time.Second,
 		WriteTimeout: config.Timeout * time.Second,
 		IdleTimeout:  config.Timeout * time.Second,
-		Handler:      http.HandlerFunc(handleFunc),
+		Handler:      securityHeadersMiddleware(http.HandlerFunc(handleFunc)),
 	}
 
 	log.Printf("Server started at: %s\n", proxy.Addr)
