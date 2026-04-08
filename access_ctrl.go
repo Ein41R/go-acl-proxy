@@ -24,13 +24,12 @@ func ACLCheck(host string) bool {
 }
 
 func fetchACL() io.ReadCloser {
-	URL := "https://big.oisd.nl/"
-	log.Printf("fetching ACL from: %s\n", URL)
+	log.Printf("fetching ACL from: %s\n", config.ACL)
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
 
-	resp, err := client.Get(URL)
+	resp, err := client.Get(config.ACL)
 	if err != nil {
 		panic(err)
 	}
