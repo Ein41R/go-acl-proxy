@@ -26,15 +26,6 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 	bufrw.Flush()
 	defer client_conn.Close()
 
-	log.Printf("Outgoing CONNECT request for %s\n", r.Host)
-
-	//EXPLINATION: check ACL for target host
-	ok := ACLCheck(r.Host)
-	if !ok {
-		http.Error(w, "Access denied", http.StatusForbidden)
-		return
-	}
-
 	// EXPLINATION: establish TCP connection to the target host
 	host_conn, err := net.DialTimeout("tcp", r.Host, 3*time.Second)
 	if err != nil {
@@ -42,7 +33,6 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer host_conn.Close()
-	log.Printf("TCP connection to %s established\n", r.Host)
 
 	//EXPLINATION: send 200 Connection Established response to client
 	_, err = client_conn.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
@@ -79,12 +69,10 @@ func handleAny(w http.ResponseWriter, r *http.Request) {
 		headers[key] = values[0]
 	}
 
-	response := MakeRequest(r.URL.String(), r.Method, headers)
-	// log.Printf("Response from %s: %s\n", r.URL.String(), response)
-	w.Write([]byte(response))
+	w.Write(MakeRequest(r.URL.String(), r.Method, headers))
 }
 
-func MakeRequest(URL string, method string, headers map[string]string) string {
+func MakeRequest(URL string, method string, headers map[string]string) []byte {
 	log.Printf("Making %s request\n", method)
 	client := &http.Client{}
 	req, _ := http.NewRequest(method, URL, nil)
@@ -100,8 +88,5 @@ func MakeRequest(URL string, method string, headers map[string]string) string {
 	defer res.Body.Close()
 
 	resBody, _ := io.ReadAll(res.Body)
-	response := string(resBody)
-
-	log.Println("Request successfuly made to", URL)
-	return response
+	return resBody
 }
