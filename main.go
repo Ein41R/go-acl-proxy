@@ -33,10 +33,7 @@ func main() {
 		Handler:      http.HandlerFunc(handleFunc),
 	}
 
-	host := config.Host
-	port := config.Port
-
-	log.Printf("Server started at %s:%d\n", host, port)
+	log.Printf("Server started at: %s\n", proxy.Addr)
 	err = proxy.ListenAndServe()
 	if err != nil {
 		panic(err)
