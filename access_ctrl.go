@@ -57,4 +57,5 @@ func loadACL() {
 			panic(err)
 		}
 	}
+	log.Printf("Loaded %d ACL rules\n", len(rules))
 }

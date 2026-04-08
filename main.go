@@ -25,7 +25,8 @@ var perHopHeaders = []string{
 // var config Config
 
 func main() {
-	loadACL()
+	go loadACL()
+	log.Println("ACL loaded successfully")
 
 	ctx := context.Background()
 	ctx, err := loadConfig(ctx)
