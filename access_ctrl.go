@@ -1,13 +1,23 @@
 package main
 
-import "github.com/pmezard/adblock/adblock"
+import (
+	"os"
+
+	"github.com/pmezard/adblock/adblock"
+)
+
+var matcher *adblock.RuleMatcher
 
 func ACLCheck(host string) bool {
 	if host == "" {
 		return false
 	}
-	matcher := loadACL()
-	return matcher.Match(host)
+	req := &adblock.Request{URL: host}
+	match, _, err := matcher.Match(req)
+	if err != nil {
+		panic(err)
+	}
+	return match
 }
 
 func fetchACL() {
@@ -15,9 +25,9 @@ func fetchACL() {
 
 }
 
-func loadACL() adblock.Matcher {
-	matcher := adblock.NewMatcher()
-	file, err := adblock.OpenFile("easylist.txt")
+func loadACL() {
+	matcher = adblock.NewMatcher()
+	file, err := os.Open("https://easylist.to/easylist/easylist.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -32,5 +42,4 @@ func loadACL() adblock.Matcher {
 			panic(err)
 		}
 	}
-	return matcher
 }

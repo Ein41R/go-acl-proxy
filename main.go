@@ -22,9 +22,11 @@ var perHopHeaders = []string{
 }
 
 // EXPLINATION: global variable to hold the config, loaded at startup
-var config Config
+// var config Config
 
 func main() {
+	loadACL()
+
 	ctx := context.Background()
 	ctx, err := loadConfig(ctx)
 	if err != nil {
@@ -48,6 +50,13 @@ func main() {
 
 func handleFunc(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received request: %s %s\n", r.Method, r.URL.Path)
+
+	if ACLCheck(r.URL.String()) {
+		log.Printf("Blocked request to: %s\n", r.URL.String())
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		handleGet(w, r)
