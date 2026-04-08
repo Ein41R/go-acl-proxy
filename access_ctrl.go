@@ -1,7 +1,10 @@
 package main
 
 import (
-	"os"
+	"io"
+	"log"
+	"net/http"
+	"time"
 
 	"github.com/pmezard/adblock/adblock"
 )
@@ -20,19 +23,31 @@ func ACLCheck(host string) bool {
 	return match
 }
 
-func fetchACL() {
-	// config.ACL
+func fetchACL() io.ReadCloser {
+	URL := "https://big.oisd.nl/"
+	log.Printf("fetching ACL from: %s\n", URL)
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	resp, err := client.Get(URL)
+	if err != nil {
+		panic(err)
+	}
+	return resp.Body
 
 }
 
 func loadACL() {
 	matcher = adblock.NewMatcher()
-	file, err := os.Open("https://easylist.to/easylist/easylist.txt")
-	if err != nil {
-		panic(err)
-	}
+	// file, err := os.Open("ACL.txt")
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	rules, err := adblock.ParseRules(file)
+	// rules, err := adblock.ParseRules(file)
+
+	rules, err := adblock.ParseRules(fetchACL())
 	if err != nil {
 		panic(err)
 	}
