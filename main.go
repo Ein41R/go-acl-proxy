@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 // WARNING: incomplete list of hop-by-hop headers
@@ -24,11 +25,19 @@ func main() {
 	err := loadConfig()
 	go loadACL()
 
+	proxy := &http.Server{
+		Addr:         fmt.Sprintf("%s:%d", config.Host, config.Port),
+		ReadTimeout:  config.Timeout * time.Second,
+		WriteTimeout: config.Timeout * time.Second,
+		IdleTimeout:  config.Timeout * time.Second,
+		Handler:      http.HandlerFunc(handleFunc),
+	}
+
 	host := config.Host
 	port := config.Port
 
 	log.Printf("Server started at %s:%d\n", host, port)
-	err = http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), http.HandlerFunc(handleFunc))
+	err = proxy.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
