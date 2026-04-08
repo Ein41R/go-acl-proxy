@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,23 +20,9 @@ var perHopHeaders = []string{
 	"Upgrade",
 }
 
-// EXPLINATION: global variable to hold the config, loaded at startup
-// var config Config
-
 func main() {
 	go loadACL()
-	log.Println("ACL loaded successfully")
-
-	ctx := context.Background()
-	ctx, err := loadConfig(ctx)
-	if err != nil {
-		log.Fatalf("Error loading config: %v", err)
-	}
-	//EXPLINATION: ctx.Value returns interface, which we assert the Config type
-	config, ok := ctx.Value(cfgInterfaceKey).(Config)
-	if !ok {
-		log.Fatal("Failed to load config")
-	}
+	err := loadConfig()
 
 	host := config.Host
 	port := config.Port

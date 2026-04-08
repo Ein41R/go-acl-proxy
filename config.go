@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 )
@@ -19,24 +18,19 @@ type Config struct {
 
 // WARNING:  type cfgKey is a private type
 // to avoid key collision, preserves typesaftey
-type cfgKey string
+var config Config
 
-const cfgInterfaceKey cfgKey = "cfg_interface"
-
-func loadConfig(ctx context.Context) (context.Context, error) {
-	var data Config
+func loadConfig() error {
 
 	jsonData, err := os.ReadFile(configfile)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = json.Unmarshal(jsonData, &data)
+	err = json.Unmarshal(jsonData, &config)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	ctx = context.WithValue(ctx, cfgInterfaceKey, data)
-
-	return ctx, nil
+	return nil
 }
