@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"time"
 )
 
 var configfile = "config.json"
@@ -10,10 +11,10 @@ var configfile = "config.json"
 // EXPLINATION: parsing json file into struct
 // TODO: consider typesafety
 type Config struct {
-	Host    string `json:"host"`
-	Port    int    `json:"port"`
-	TimeOut int    `json:"timeout"`
-	ACL     string `json:"ACL"`
+	Host    string        `json:"host"`
+	Port    int           `json:"port"`
+	Timeout time.Duration `json:"timeout"`
+	ACL     string        `json:"ACL"`
 }
 
 // WARNING:  type cfgKey is a private type

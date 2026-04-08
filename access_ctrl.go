@@ -27,7 +27,7 @@ func ACLCheck(host string) bool {
 func fetchACL() io.ReadCloser {
 	log.Printf("fetching ACL from: %s\n", config.ACL)
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: config.Timeout * time.Second,
 	}
 
 	resp, err := client.Get(config.ACL)
