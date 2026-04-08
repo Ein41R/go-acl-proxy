@@ -21,8 +21,8 @@ var perHopHeaders = []string{
 }
 
 func main() {
-	go loadACL()
 	err := loadConfig()
+	go loadACL()
 
 	host := config.Host
 	port := config.Port

@@ -9,6 +9,7 @@ import (
 	"github.com/pmezard/adblock/adblock"
 )
 
+// WARNING: global variable, consider refactoring to avoid it
 var matcher *adblock.RuleMatcher
 
 func ACLCheck(host string) bool {
@@ -37,14 +38,9 @@ func fetchACL() io.ReadCloser {
 
 }
 
+// NOTE: runs in goroutine, therefore panic() is justfified
 func loadACL() {
 	matcher = adblock.NewMatcher()
-	// file, err := os.Open("ACL.txt")
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// rules, err := adblock.ParseRules(file)
 
 	rules, err := adblock.ParseRules(fetchACL())
 	if err != nil {
