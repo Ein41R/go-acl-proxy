@@ -40,7 +40,7 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("%v -> %v", client_conn.LocalAddr(), host_conn.RemoteAddr())
+	// log.Printf("%v -> %v", client_conn.LocalAddr(), host_conn.RemoteAddr())
 
 	//EXPLINATION: start bidirectional piping between client and host
 	wg.Go(func() { pipe(client_conn, host_conn, "to host") })
@@ -49,12 +49,18 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 }
 
 func pipe(src io.Writer, dst io.Reader, direction string) {
-	written, err := io.Copy(src, dst)
-
+	_, err := io.Copy(src, dst)
 	if err != nil {
 		log.Printf("Error occurred while piping data: %v", err)
 	}
-	log.Printf("Piped %d bytes %s", written, direction)
+
+	//half closed connection to not interrupt other goroutine
+	if t, ok := src.(*net.TCPConn); ok {
+		t.CloseWrite()
+	}
+	if t, ok := dst.(*net.TCPConn); ok {
+		t.CloseRead()
+	}
 }
 
 func handleAny(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +79,6 @@ func handleAny(w http.ResponseWriter, r *http.Request) {
 }
 
 func MakeRequest(URL string, method string, headers map[string]string) []byte {
-	log.Printf("Making %s request\n", method)
 	client := &http.Client{}
 	req, _ := http.NewRequest(method, URL, nil)
 
