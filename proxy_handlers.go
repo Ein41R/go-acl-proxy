@@ -43,18 +43,18 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 	// log.Printf("%v -> %v", client_conn.LocalAddr(), host_conn.RemoteAddr())
 
 	//EXPLINATION: start bidirectional piping between client and host
-	wg.Go(func() { pipe(client_conn, host_conn, "to host") })
-	wg.Go(func() { pipe(host_conn, client_conn, "to client") })
+	wg.Go(func() { pipe(client_conn, host_conn) })
+	wg.Go(func() { pipe(host_conn, client_conn) })
 	wg.Wait() // wait for both goroutines to finish
 }
 
-func pipe(src io.Writer, dst io.Reader, direction string) {
+func pipe(src io.Writer, dst io.Reader) {
 	_, err := io.Copy(src, dst)
 	if err != nil {
 		log.Printf("Error occurred while piping data: %v", err)
 	}
 
-	//half closed connection to not interrupt other goroutine
+	//WARNING: halfclose to prevent race condition
 	if t, ok := src.(*net.TCPConn); ok {
 		t.CloseWrite()
 	}
