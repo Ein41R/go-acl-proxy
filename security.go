@@ -22,3 +22,9 @@ func securityHeadersMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func removeHopByHopHeaders(header http.Header) {
+	for _, h := range perHopHeaders {
+		header.Del(h)
+	}
+}

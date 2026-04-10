@@ -64,11 +64,6 @@ func pipe(src io.Writer, dst io.Reader) {
 }
 
 func handleAny(w http.ResponseWriter, r *http.Request) {
-	// strip per hop headers
-
-	for _, h := range perHopHeaders {
-		r.Header.Del(h)
-	}
 
 	headers := make(map[string]string)
 	for key, values := range r.Header {
@@ -85,6 +80,8 @@ func MakeRequest(URL string, method string, headers map[string]string) []byte {
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
+
+	removeHopByHopHeaders(req.Header)
 
 	res, err := client.Do(req)
 	if err != nil {
