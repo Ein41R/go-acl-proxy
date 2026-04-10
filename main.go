@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,15 +25,15 @@ var perHopHeaders = []string{
 }
 
 func handleFunc(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received request: %s \\ %s", r.Method, r.URL.Path)
+	l.Infof("Received request: %s \\ %s", r.Method, r.URL.Path)
 
 	if ACLCheck(r.URL.String()) {
-		log.Printf("Blocked request to: %s", r.URL.String())
+		l.Infof("Blocked request to: %s", r.URL.String())
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
-	log.Printf("\n")
+	l.Infof("")
 
 	switch r.Method {
 	case http.MethodGet:
@@ -60,7 +59,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Server started at: %s\n", proxy.Addr)
+		l.Infof("Server started at: %s", proxy.Addr)
 		proxy.ListenAndServe()
 	}()
 
@@ -68,14 +67,14 @@ func main() {
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	log.Println("Initiating graceful shutdown...")
+	l.Infof("Initiating graceful shutdown...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := proxy.Shutdown(ctx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
+		l.Fatalf("Server forced to shutdown: %v", err)
 	}
 
-	log.Println("Server exiting")
+	l.Infof("Server exiting")
 }

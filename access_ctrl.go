@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -25,7 +24,7 @@ func ACLCheck(host string) bool {
 }
 
 func fetchACL() io.ReadCloser {
-	log.Printf("fetching ACL from: %s\n", config.ACL)
+	l.Infof("fetching ACL from: %s", config.ACL)
 	client := &http.Client{
 		Timeout: config.Timeout * time.Second,
 	}
@@ -52,5 +51,5 @@ func loadACL() {
 			panic(err)
 		}
 	}
-	log.Printf("Loaded %d ACL rules\n", len(rules))
+	l.Infof("Loaded %d ACL rules", len(rules))
 }

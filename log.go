@@ -6,20 +6,22 @@ type logger struct {
 	level int
 }
 
-func initLogger() logger {
+var l logger
+
+func initLogger() {
 	switch config.logLevel {
 	case "all":
-		return logger{0}
+		l = logger{0}
 	case "info":
-		return logger{1}
+		l = logger{1}
 	case "error":
-		return logger{2}
+		l = logger{2}
 	case "fatal":
-		return logger{3}
+		l = logger{3}
 	case "none":
-		return logger{4}
+		l = logger{4}
 	default:
-		return logger{4}
+		l = logger{0}
 	}
 }
 

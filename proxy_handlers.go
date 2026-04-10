@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"sync"
@@ -40,7 +39,7 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// log.Printf("%v -> %v", client_conn.LocalAddr(), host_conn.RemoteAddr())
+	// l.Infof("%v -> %v", client_conn.LocalAddr(), host_conn.RemoteAddr())
 
 	//EXPLINATION: start bidirectional piping between client and host
 	wg.Go(func() { pipe(client_conn, host_conn) })
@@ -51,7 +50,7 @@ func handleConnect(w http.ResponseWriter, r *http.Request) {
 func pipe(src io.Writer, dst io.Reader) {
 	_, err := io.Copy(src, dst)
 	if err != nil {
-		log.Printf("Error occurred while piping data: %v", err)
+		l.Errorf("Error occurred while piping data: %v", err)
 	}
 
 	//WARNING: halfclose to prevent race condition
@@ -85,7 +84,7 @@ func MakeRequest(URL string, method string, headers map[string]string) []byte {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Println("Err is", err)
+		l.Errorf("Err is %v", err)
 	}
 	defer res.Body.Close()
 
