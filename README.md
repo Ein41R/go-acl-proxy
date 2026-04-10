@@ -5,6 +5,8 @@ a simple content-filtering proxy written in go.
 provide the URL to your access control list(ACL) in the config.json
 then run the codebase using 
     $ go run *.go
+###Flags:
+  -config "path to config file"
 
 ## NOTE
 - considering the length of your ACL, your ACL is loaded concurrently in a goroutine, to minimize server startup time

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"os"
 	"time"
 )
@@ -18,13 +19,15 @@ type Config struct {
 // WARNING:  type cfgKey is a private type
 // to avoid key collision, preserves typesaftey
 var config Config
-var configfile = "config.json"
 
 func loadConfig() error {
 
+	cfgFile := flag.String("config", "config.json", "path to config file")
+	flag.Parse()
+
 	loadDefaultConfig()
 
-	jsonData, err := os.ReadFile(configfile)
+	jsonData, err := os.ReadFile(*cfgFile)
 	if err != nil {
 		return err
 	}

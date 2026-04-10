@@ -21,6 +21,27 @@ var perHopHeaders = []string{
 	"Upgrade",
 }
 
+func handleFunc(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request: %s \\ %s", r.Method, r.URL.Path)
+
+	if ACLCheck(r.URL.String()) {
+		log.Printf("Blocked request to: %s", r.URL.String())
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	log.Printf("\n")
+
+	switch r.Method {
+	case http.MethodGet:
+		handleGet(w, r)
+	case http.MethodConnect:
+		handleConnect(w, r)
+	default:
+		handleAny(w, r)
+	}
+}
+
 func main() {
 	err := loadConfig()
 	go loadACL()
@@ -37,24 +58,5 @@ func main() {
 	err = proxy.ListenAndServe()
 	if err != nil {
 		panic(err)
-	}
-}
-
-func handleFunc(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received request: %s %s\n", r.Method, r.URL.Path)
-
-	if ACLCheck(r.URL.String()) {
-		log.Printf("Blocked request to: %s\n", r.URL.String())
-		http.Error(w, "Forbidden", http.StatusForbidden)
-		return
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		handleGet(w, r)
-	case http.MethodConnect:
-		handleConnect(w, r)
-	default:
-		handleAny(w, r)
 	}
 }
