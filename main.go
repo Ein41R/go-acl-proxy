@@ -47,7 +47,7 @@ func handleFunc(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	err := loadConfig()
+	loadConfig()
 	go loadACL()
 
 	proxy := &http.Server{
@@ -60,10 +60,7 @@ func main() {
 
 	go func() {
 		log.Printf("Server started at: %s\n", proxy.Addr)
-		err = proxy.ListenAndServe()
-		if err != nil {
-			panic(err)
-		}
+		proxy.ListenAndServe()
 	}()
 
 	quit := make(chan os.Signal, 1)
