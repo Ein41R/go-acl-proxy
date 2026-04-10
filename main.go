@@ -48,6 +48,7 @@ func handleFunc(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	loadConfig()
+	initLogger()
 	go loadACL()
 
 	proxy := &http.Server{

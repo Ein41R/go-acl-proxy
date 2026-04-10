@@ -10,10 +10,11 @@ import (
 // EXPLINATION: parsing json file into struct
 // TODO: consider typesafety
 type Config struct {
-	Host    string        `json:"host"`
-	Port    int           `json:"port"`
-	Timeout time.Duration `json:"timeout"`
-	ACL     string        `json:"ACL"`
+	Host     string        `json:"host"`
+	Port     int           `json:"port"`
+	Timeout  time.Duration `json:"timeout"`
+	ACL      string        `json:"ACL"`
+	logLevel string
 }
 
 // WARNING:  type cfgKey is a private type
@@ -23,6 +24,7 @@ var config Config
 func loadConfig() error {
 
 	cfgFile := flag.String("config", "config.json", "path to config file")
+	config.logLevel = *flag.String("log-level", "info", "log level (debug, info, warn, error)")
 	flag.Parse()
 
 	loadDefaultConfig()
