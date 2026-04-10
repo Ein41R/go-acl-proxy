@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-var configfile = "config.json"
-
 // EXPLINATION: parsing json file into struct
 // TODO: consider typesafety
 type Config struct {
@@ -20,8 +18,11 @@ type Config struct {
 // WARNING:  type cfgKey is a private type
 // to avoid key collision, preserves typesaftey
 var config Config
+var configfile = "config.json"
 
 func loadConfig() error {
+
+	loadDefaultConfig()
 
 	jsonData, err := os.ReadFile(configfile)
 	if err != nil {
@@ -34,4 +35,14 @@ func loadConfig() error {
 	}
 
 	return nil
+}
+
+// EXPLINATION: default config values, overwritten when json with specified key is inserted
+func loadDefaultConfig() {
+	config = Config{
+		Host:    "0.0.0.0",
+		Port:    3333,
+		Timeout: 3 * time.Second,
+		ACL:     "https://easylist.to/easylist/easylist.txt",
+	}
 }
