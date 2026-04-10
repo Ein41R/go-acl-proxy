@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -54,9 +58,26 @@ func main() {
 		Handler:      securityHeadersMiddleware(http.HandlerFunc(handleFunc)),
 	}
 
-	log.Printf("Server started at: %s\n", proxy.Addr)
-	err = proxy.ListenAndServe()
-	if err != nil {
-		panic(err)
+	go func() {
+		log.Printf("Server started at: %s\n", proxy.Addr)
+		err = proxy.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	log.Println("Initiating graceful shutdown...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := proxy.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
+
+	log.Println("Server exiting")
 }
